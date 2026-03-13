@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Question Entry Tool</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f5f7fb;
+      color: #1f2937;
+      font-family: Arial, sans-serif;
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 24px auto;
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    }
+    h1 { margin-top: 0; font-size: 26px; }
+    .hint { color: #4b5563; margin-bottom: 14px; }
+    .step {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #1d4ed8;
+      background: #dbeafe;
+      border-radius: 999px;
+      padding: 4px 10px;
+      margin-bottom: 8px;
+    }
+    .help {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: -2px;
+    }
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: 700;
+    }
+    textarea, input[type="text"], input[type="number"], select, input[type="file"] {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 14px;
+    }
+    textarea {
+      min-height: 80px;
+      font-family: Consolas, Monaco, monospace;
+    }
+    .row-2 {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr 1fr;
+    }
+    .row-3 {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    .row-4 {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+    .card {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 12px;
+      background: #fafafa;
+      margin-top: 12px;
+    }
+    h2 {
+      font-size: 18px;
+      margin: 16px 0 8px;
+    }
+    h3 {
+      margin: 8px 0;
+      font-size: 16px;
+    }
+    .btns {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .primary { background: #2563eb; color: #fff; }
+    .ok { background: #16a34a; color: #fff; }
+    .secondary { background: #e5e7eb; color: #111827; }
+    .danger { background: #dc2626; color: #fff; }
+    .muted { background: #64748b; color: #fff; }
+    .status, .panel {
+      margin-top: 12px;
+      border-radius: 8px;
+      padding: 10px;
+      white-space: pre-wrap;
+    }
+    .panel {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      font-size: 13px;
+    }
+    .status {
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+    }
+    @media (max-width: 900px) {
+      .row-2, .row-3, .row-4 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Daily Question Entry Tool</h1>
+    <p class="hint">Simple flow: fill details, add question, repeat, then download final JSON and upload images.</p>
+
+    <div class="card">
+      <div class="step">STEP 1</div>
+      <h3>Paper Details</h3>
+      <div class="row-3">
+        <div>
+          <label for="paperFileName">Output JSON file name</label>
+          <input id="paperFileName" type="text" value="questions_array.json">
+        </div>
+        <div>
+          <label for="uploadKey">Upload Key</label>
+          <input id="uploadKey" type="password" placeholder="Paste your upload key">
+          <div class="help">Ask admin for this key. Keep it private.</div>
+        </div>
+        <div>
+          <label for="paperTag">Paper tag</label>
+          <input id="paperTag" type="text" placeholder="set_1">
+        </div>
+      </div>
+      <div class="row-4">
+        <div>
+          <label for="examName">Exam Name</label>
+          <select id="examName">
+            <option value="CGL">CGL</option>
+            <option value="CHSL">CHSL</option>
+            <option value="MTS">MTS</option>
+          </select>
+        </div>
+        <div>
+          <label for="year">Year</label>
+          <input id="year" type="number" placeholder="2024">
+        </div>
+        <div>
+          <label for="tier">Tier</label>
+          <select id="tier">
+            <option value="Tier1">Tier 1</option>
+            <option value="Tier2">Tier 2</option>
+          </select>
+        </div>
+        <div>
+          <label for="subject">Subject</label>
+          <select id="subject">
+            <option value="English Comprehension">English Comprehension</option>
+            <option value="General Intelligence and Reasoning">General Intelligence and Reasoning</option>
+            <option value="Quantitative Aptitude">Quantitative Aptitude</option>
+            <option value="General Awareness">General Awareness</option>
+            <option value="Computer">Computer</option>
+          </select>
+        </div>
+      </div>
+      <div class="row-4">
+        <div>
+          <label for="topic">Topic</label>
+          <input id="topic" type="text" placeholder="Error Spotting">
+        </div>
+        <div>
+          <label for="subTopic">Sub Topic</label>
+          <input id="subTopic" type="text" placeholder="Optional">
+        </div>
+        <div>
+          <label for="difficulty">Difficulty</label>
+          <input id="difficulty" type="text" placeholder="Medium">
+        </div>
+        <div>
+          <label for="shift">Shift</label>
+          <select id="shift">
+            <option value="">Not Selected</option>
+            <option value="Shift 1">Shift 1</option>
+            <option value="Shift 2">Shift 2</option>
+            <option value="Shift 3">Shift 3</option>
+            <option value="Shift 4">Shift 4</option>
+          </select>
+        </div>
+      </div>
+      <div class="row-3">
+        <div>
+          <label for="paperDate">Date (optional)</label>
+          <input id="paperDate" type="date">
+        </div>
+        <div>
+          <label>Question ID Format</label>
+          <input type="text" value="Auto-generated" disabled>
+          <div class="help">No need to enter IDs manually.</div>
+        </div>
+      </div>
+      <div class="row-2">
+        <div>
+          <label for="importJsonFile">Load Existing JSON Array (optional)</label>
+          <input id="importJsonFile" type="file" accept=".json,application/json">
+          <div class="help">Use this to continue from an existing JSON array file.</div>
+        </div>
+      </div>
+    </div>
+
+    <h2>Add Question</h2>
+    <div class="card">
+      <div class="step">STEP 2</div>
+      <div class="row-2">
+        <div>
+          <label for="qEn">Question Text (English)</label>
+          <textarea id="qEn" placeholder="Enter question text in English"></textarea>
+        </div>
+        <div>
+          <label for="qHi">Question Text (Hindi)</label>
+          <textarea id="qHi" placeholder="Enter question text in Hindi (optional)"></textarea>
+        </div>
+      </div>
+      <div class="row-2">
+        <div>
+          <label for="passageEn">Passage Text (English, optional)</label>
+          <textarea id="passageEn" placeholder="Use this only if question has passage"></textarea>
+        </div>
+        <div>
+          <label for="passageHi">Passage Text (Hindi, optional)</label>
+          <textarea id="passageHi" placeholder="Optional Hindi passage"></textarea>
+        </div>
+      </div>
+      <label for="questionImage">Question Image (optional)</label>
+      <input id="questionImage" type="file" accept="image/*">
+    </div>
+
+    <div class="card">
+      <div class="step">STEP 3</div>
+      <h3>Options</h3>
+      <div class="row-2">
+        <div>
+          <label for="aEn">Option A (English)</label>
+          <input id="aEn" type="text">
+        </div>
+        <div>
+          <label for="aHi">Option A (Hindi)</label>
+          <input id="aHi" type="text">
+        </div>
+      </div>
+      <label for="aImage">Option A Image (optional)</label>
+      <input id="aImage" type="file" accept="image/*">
+
+      <div class="row-2">
+        <div>
+          <label for="bEn">Option B (English)</label>
+          <input id="bEn" type="text">
+        </div>
+        <div>
+          <label for="bHi">Option B (Hindi)</label>
+          <input id="bHi" type="text">
+        </div>
+      </div>
+      <label for="bImage">Option B Image (optional)</label>
+      <input id="bImage" type="file" accept="image/*">
+
+      <div class="row-2">
+        <div>
+          <label for="cEn">Option C (English)</label>
+          <input id="cEn" type="text">
+        </div>
+        <div>
+          <label for="cHi">Option C (Hindi)</label>
+          <input id="cHi" type="text">
+        </div>
+      </div>
+      <label for="cImage">Option C Image (optional)</label>
+      <input id="cImage" type="file" accept="image/*">
+
+      <div class="row-2">
+        <div>
+          <label for="dEn">Option D (English)</label>
+          <input id="dEn" type="text">
+        </div>
+        <div>
+          <label for="dHi">Option D (Hindi)</label>
+          <input id="dHi" type="text">
+        </div>
+      </div>
+      <label for="dImage">Option D Image (optional)</label>
+      <input id="dImage" type="file" accept="image/*">
+    </div>
+
+    <div class="card">
+      <div class="step">STEP 4</div>
+      <h3>Answer</h3>
+      <div class="row-3">
+        <div>
+          <label for="correctOption">Correct Option</label>
+          <select id="correctOption">
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+          </select>
+        </div>
+        <div>
+          <label for="solEn">Solution (English)</label>
+          <textarea id="solEn" placeholder="Solution text in English"></textarea>
+        </div>
+        <div>
+          <label for="solHi">Solution (Hindi)</label>
+          <textarea id="solHi" placeholder="Solution text in Hindi (optional)"></textarea>
+        </div>
+      </div>
+      <label for="answerImage">Answer Image (optional)</label>
+      <input id="answerImage" type="file" accept="image/*">
+    </div>
+
+    <div class="btns">
+      <button id="addQuestionBtn" class="primary" type="button">Add This Question</button>
+      <button id="clearFormBtn" class="muted" type="button">Clear Form</button>
+      <button id="downloadJsonBtn" class="ok" type="button" disabled>Download Final JSON</button>
+      <button id="uploadImagesBtn" class="secondary" type="button" disabled>Upload All Images</button>
+      <button id="removeLastBtn" class="secondary" type="button" disabled>Remove Last Question</button>
+      <button id="clearAllBtn" class="danger" type="button" disabled>Clear All Questions</button>
+    </div>
+
+    <div id="status" class="status">Waiting for input...</div>
+    <div id="panel" class="panel">Questions in array: 0</div>
+  </div>
+
+  <script>
+    const paperFileName = document.getElementById("paperFileName");
+    const uploadKey = document.getElementById("uploadKey");
+    const paperTag = document.getElementById("paperTag");
+    const STORAGE_CONFIG = {
+      owner: "nik-ma",
+      repo: "images",
+      rootFolder: "rankMaker"
+    };
+
+    const examName = document.getElementById("examName");
+    const year = document.getElementById("year");
+    const tier = document.getElementById("tier");
+    const subject = document.getElementById("subject");
+    const topic = document.getElementById("topic");
+    const subTopic = document.getElementById("subTopic");
+    const difficulty = document.getElementById("difficulty");
+    const shift = document.getElementById("shift");
+    const paperDate = document.getElementById("paperDate");
+
+    const qEn = document.getElementById("qEn");
+    const qHi = document.getElementById("qHi");
+    const passageEn = document.getElementById("passageEn");
+    const passageHi = document.getElementById("passageHi");
+    const questionImage = document.getElementById("questionImage");
+
+    const aEn = document.getElementById("aEn");
+    const aHi = document.getElementById("aHi");
+    const aImage = document.getElementById("aImage");
+    const bEn = document.getElementById("bEn");
+    const bHi = document.getElementById("bHi");
+    const bImage = document.getElementById("bImage");
+    const cEn = document.getElementById("cEn");
+    const cHi = document.getElementById("cHi");
+    const cImage = document.getElementById("cImage");
+    const dEn = document.getElementById("dEn");
+    const dHi = document.getElementById("dHi");
+    const dImage = document.getElementById("dImage");
+
+    const correctOption = document.getElementById("correctOption");
+    const solEn = document.getElementById("solEn");
+    const solHi = document.getElementById("solHi");
+    const answerImage = document.getElementById("answerImage");
+    const importJsonFile = document.getElementById("importJsonFile");
+
+    const addQuestionBtn = document.getElementById("addQuestionBtn");
+    const clearFormBtn = document.getElementById("clearFormBtn");
+    const downloadJsonBtn = document.getElementById("downloadJsonBtn");
+    const uploadImagesBtn = document.getElementById("uploadImagesBtn");
+    const removeLastBtn = document.getElementById("removeLastBtn");
+    const clearAllBtn = document.getElementById("clearAllBtn");
+    const statusEl = document.getElementById("status");
+    const panelEl = document.getElementById("panel");
+
+    const entries = [];
+    const PAPER_SETTINGS_KEY = "question_tool_paper_settings_v1";
+    const QUESTIONS_DRAFT_KEY = "question_tool_questions_draft_v1";
+
+    function setStatus(message, isError) {
+      statusEl.textContent = message;
+      statusEl.style.background = isError ? "#fef2f2" : "#f0fdf4";
+      statusEl.style.color = isError ? "#991b1b" : "#14532d";
+      statusEl.style.border = isError ? "1px solid #fecaca" : "1px solid #bbf7d0";
+    }
+
+    function updatePanel() {
+      const ids = entries.slice(-8).map((e) => e.question.qID);
+      const subjectCounts = {};
+      entries.forEach((entry) => {
+        const name = (entry.question && entry.question.meta && entry.question.meta.subject) || "Unknown";
+        subjectCounts[name] = (subjectCounts[name] || 0) + 1;
+      });
+      const subjectLines = Object.keys(subjectCounts)
+        .sort()
+        .map((name) => `- ${name}: ${subjectCounts[name]}`)
+        .join("\n");
+
+      panelEl.textContent =
+        "Questions in array: " + entries.length +
+        "\nLast IDs: " + (ids.length ? ids.join(", ") : "none") +
+        "\n\nSubject-wise count:\n" + (subjectLines || "- none");
+
+      const hasItems = entries.length > 0;
+      downloadJsonBtn.disabled = !hasItems;
+      uploadImagesBtn.disabled = !hasItems;
+      removeLastBtn.disabled = !hasItems;
+      clearAllBtn.disabled = !hasItems;
+    }
+
+    function normalizeFileName(name) {
+      const value = String(name || "").trim();
+      if (!value) return "questions_array.json";
+      return value.endsWith(".json") ? value : value + ".json";
+    }
+
+    function slug(value) {
+      return String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "_")
+        .replace(/^_+|_+$/g, "");
+    }
+
+    function randomDigits(count) {
+      let out = "";
+      for (let i = 0; i < count; i += 1) {
+        out += Math.floor(Math.random() * 10);
+      }
+      return out;
+    }
+
+    function generateQuestionId() {
+      return String(Date.now()) + randomDigits(3);
+    }
+
+    function getExt(fileName) {
+      const parts = String(fileName || "").split(".");
+      if (parts.length < 2) return "png";
+      return parts.pop().toLowerCase().replace(/[^a-z0-9]/g, "") || "png";
+    }
+
+    function currentMeta() {
+      const rawDate = paperDate.value.trim();
+      const formattedDate = rawDate ? rawDate.split("-").reverse().join("_") : null;
+      return {
+        exam_name: examName.value.trim(),
+        year: Number(year.value),
+        tier: tier.value.trim(),
+        subject: subject.value.trim(),
+        topic: topic.value.trim(),
+        sub_topic: subTopic.value.trim() || null,
+        difficulty: difficulty.value.trim(),
+        languages: ["en", "hi"],
+        date: formattedDate,
+        shift: shift.value.trim() || null
+      };
+    }
+
+    function validateRequired() {
+      if (!examName.value.trim()) return "Exam name is required.";
+      if (!year.value.trim()) return "Year is required.";
+      if (!tier.value.trim()) return "Tier is required.";
+      if (!subject.value.trim()) return "Subject is required.";
+      if (!topic.value.trim()) return "Topic is required.";
+      if (!difficulty.value.trim()) return "Difficulty is required.";
+      if (!qEn.value.trim()) return "Question text (English) is required.";
+      if (!aEn.value.trim() || !bEn.value.trim() || !cEn.value.trim() || !dEn.value.trim()) {
+        return "All option English fields (A/B/C/D) are required.";
+      }
+      if (!solEn.value.trim()) return "Solution text (English) is required.";
+      return "";
+    }
+
+    async function makeOption(qid, key, enText, hiText, fileInput, assets) {
+      const optionId = qid + "_" + key;
+      const option = {
+        id: optionId,
+        text: {
+          en: enText.trim(),
+          hi: hiText.trim() || enText.trim()
+        }
+      };
+      const file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+      if (file) {
+        const fileName = qid + "_" + key.toLowerCase() + ".png";
+        const content = await fileToPngBase64(file);
+        assets.push({ fileName, content });
+      }
+      return option;
+    }
+
+    function downloadBlob(blob, fileName) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = String(reader.result || "");
+          const parts = result.split(",");
+          resolve(parts.length > 1 ? parts[1] : "");
+        };
+        reader.onerror = () => reject(new Error("Could not read file: " + file.name));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function fileToPngBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            try {
+              const canvas = document.createElement("canvas");
+              canvas.width = img.naturalWidth || img.width;
+              canvas.height = img.naturalHeight || img.height;
+              const ctx = canvas.getContext("2d");
+              if (!ctx) {
+                reject(new Error("Could not process image: " + file.name));
+                return;
+              }
+              ctx.drawImage(img, 0, 0);
+              const dataUrl = canvas.toDataURL("image/png");
+              const parts = dataUrl.split(",");
+              resolve(parts.length > 1 ? parts[1] : "");
+            } catch (err) {
+              reject(new Error("Could not convert image to PNG: " + file.name));
+            }
+          };
+          img.onerror = () => reject(new Error("Invalid image file: " + file.name));
+          img.src = String(reader.result || "");
+        };
+        reader.onerror = () => reject(new Error("Could not read image file: " + file.name));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function getPaperFolder() {
+      const examFolder = slug(examName.value) || "exam";
+      const setFolder = slug(paperTag.value) || "set_1";
+      return `${examFolder}/${setFolder}`;
+    }
+
+    function buildPassageText() {
+      const en = passageEn.value.trim();
+      const hi = passageHi.value.trim();
+      if (!en && !hi) return null;
+      return {
+        en: en || null,
+        hi: hi || en || null
+      };
+    }
+
+    function savePaperSettings() {
+      const data = {
+        paperFileName: paperFileName.value,
+        uploadKey: uploadKey.value,
+        paperTag: paperTag.value,
+        examName: examName.value,
+        year: year.value,
+        tier: tier.value,
+        subject: subject.value,
+        topic: topic.value,
+        subTopic: subTopic.value,
+        difficulty: difficulty.value,
+        shift: shift.value,
+        paperDate: paperDate.value
+      };
+      localStorage.setItem(PAPER_SETTINGS_KEY, JSON.stringify(data));
+    }
+
+    function saveQuestionsDraft() {
+      const draft = entries.map((entry) => ({
+        question: entry.question,
+        assets: entry.assets
+      }));
+      localStorage.setItem(QUESTIONS_DRAFT_KEY, JSON.stringify(draft));
+    }
+
+    function loadPaperSettings() {
+      const raw = localStorage.getItem(PAPER_SETTINGS_KEY);
+      if (!raw) return;
+      try {
+        const data = JSON.parse(raw);
+        if (typeof data.paperFileName === "string") paperFileName.value = data.paperFileName;
+        if (typeof data.uploadKey === "string") uploadKey.value = data.uploadKey;
+        if (typeof data.paperTag === "string") paperTag.value = data.paperTag;
+        if (typeof data.examName === "string") examName.value = data.examName;
+        if (typeof data.year === "string") year.value = data.year;
+        if (typeof data.tier === "string") tier.value = data.tier;
+        if (typeof data.subject === "string") subject.value = data.subject;
+        if (typeof data.topic === "string") topic.value = data.topic;
+        if (typeof data.subTopic === "string") subTopic.value = data.subTopic;
+        if (typeof data.difficulty === "string") difficulty.value = data.difficulty;
+        if (typeof data.shift === "string") shift.value = data.shift;
+        if (typeof data.paperDate === "string") paperDate.value = data.paperDate;
+      } catch (err) {
+        // Ignore corrupted local storage data.
+      }
+    }
+
+    function loadQuestionsDraft() {
+      const raw = localStorage.getItem(QUESTIONS_DRAFT_KEY);
+      if (!raw) return;
+      try {
+        const draft = JSON.parse(raw);
+        if (!Array.isArray(draft)) return;
+        entries.length = 0;
+        draft.forEach((item) => {
+          if (!item || !item.question) return;
+          entries.push({
+            question: item.question,
+            assets: Array.isArray(item.assets) ? item.assets : []
+          });
+        });
+      } catch (err) {
+        // Ignore bad saved draft.
+      }
+    }
+
+    async function uploadFileToStorage(owner, repo, token, path, content, message) {
+      const baseUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path).replace(/%2F/g, "/")}`;
+      let sha = null;
+
+      const checkRes = await fetch(baseUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28"
+        }
+      });
+      if (checkRes.ok) {
+        const existing = await checkRes.json();
+        sha = existing.sha || null;
+      } else if (checkRes.status !== 404) {
+        throw new Error("Upload check failed for " + path);
+      }
+
+      const body = {
+        message: message,
+        content: content
+      };
+      if (sha) body.sha = sha;
+
+      const putRes = await fetch(baseUrl, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+      });
+      if (!putRes.ok) {
+        const errText = await putRes.text();
+        throw new Error("Upload failed for " + path + " (" + putRes.status + "): " + errText);
+      }
+    }
+
+    function clearQuestionForm() {
+      qEn.value = "";
+      qHi.value = "";
+      passageEn.value = "";
+      passageHi.value = "";
+      questionImage.value = "";
+      aEn.value = "";
+      aHi.value = "";
+      aImage.value = "";
+      bEn.value = "";
+      bHi.value = "";
+      bImage.value = "";
+      cEn.value = "";
+      cHi.value = "";
+      cImage.value = "";
+      dEn.value = "";
+      dHi.value = "";
+      dImage.value = "";
+      solEn.value = "";
+      solHi.value = "";
+      answerImage.value = "";
+      correctOption.value = "A";
+    }
+
+    function currentFormHasAnyImage() {
+      return Boolean(
+        (questionImage.files && questionImage.files[0]) ||
+        (aImage.files && aImage.files[0]) ||
+        (bImage.files && bImage.files[0]) ||
+        (cImage.files && cImage.files[0]) ||
+        (dImage.files && dImage.files[0]) ||
+        (answerImage.files && answerImage.files[0])
+      );
+    }
+
+    addQuestionBtn.addEventListener("click", async () => {
+      const validationError = validateRequired();
+      if (validationError) {
+        setStatus(validationError, true);
+        return;
+      }
+
+      const qid = generateQuestionId();
+      const assets = [];
+
+      const question = {
+        id: (crypto.randomUUID ? crypto.randomUUID() : "qid_" + qid),
+        qID: qid,
+        meta: currentMeta(),
+        content: {
+          question_text: {
+            en: qEn.value.trim(),
+            hi: qHi.value.trim() || qEn.value.trim()
+          },
+          passage_text: buildPassageText(),
+          is_image_based: false
+        },
+        options: [],
+        answer: {}
+      };
+
+      const qImage = questionImage.files && questionImage.files[0] ? questionImage.files[0] : null;
+      if (qImage) {
+        const qImageName = qid + ".png";
+        const content = await fileToPngBase64(qImage);
+        assets.push({ fileName: qImageName, content });
+      }
+
+      question.options = [
+        await makeOption(qid, "A", aEn.value, aHi.value, aImage, assets),
+        await makeOption(qid, "B", bEn.value, bHi.value, bImage, assets),
+        await makeOption(qid, "C", cEn.value, cHi.value, cImage, assets),
+        await makeOption(qid, "D", dEn.value, dHi.value, dImage, assets)
+      ];
+
+      const correctOptionId = qid + "_" + correctOption.value;
+      question.answer = {
+        correct_option_id: correctOptionId,
+        solution_text: {
+          en: solEn.value.trim(),
+          hi: solHi.value.trim() || solEn.value.trim()
+        }
+      };
+
+      const ansImage = answerImage.files && answerImage.files[0] ? answerImage.files[0] : null;
+      if (ansImage) {
+        const ansImageName = qid + "_answer.png";
+        const content = await fileToPngBase64(ansImage);
+        assets.push({ fileName: ansImageName, content });
+      }
+
+      question.content.is_image_based = assets.length > 0;
+
+      entries.push({ question, assets });
+      setStatus("Added question with qID: " + qid, false);
+      clearQuestionForm();
+      updatePanel();
+      savePaperSettings();
+      saveQuestionsDraft();
+    });
+
+    clearFormBtn.addEventListener("click", () => {
+      clearQuestionForm();
+      setStatus("Question form cleared.", false);
+    });
+
+    removeLastBtn.addEventListener("click", () => {
+      if (!entries.length) return;
+      const removed = entries.pop();
+      setStatus("Removed last question: " + removed.question.qID, false);
+      updatePanel();
+      saveQuestionsDraft();
+    });
+
+    clearAllBtn.addEventListener("click", () => {
+      entries.length = 0;
+      setStatus("Cleared all questions.", false);
+      updatePanel();
+      saveQuestionsDraft();
+    });
+
+    importJsonFile.addEventListener("change", (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(String(reader.result || ""));
+          const list = Array.isArray(parsed)
+            ? parsed
+            : (parsed && Array.isArray(parsed.questions) ? parsed.questions : null);
+          if (!list) {
+            setStatus("Invalid JSON. Please choose a JSON array file.", true);
+            return;
+          }
+          let importedCount = 0;
+          list.forEach((q) => {
+            if (!q || typeof q !== "object") return;
+            entries.push({
+              question: q,
+              assets: []
+            });
+            importedCount += 1;
+          });
+          saveQuestionsDraft();
+          updatePanel();
+          setStatus("Imported " + importedCount + " question(s). You can now add more.", false);
+          importJsonFile.value = "";
+        } catch (err) {
+          setStatus("Could not import JSON file: " + err.message, true);
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    [
+      paperFileName, paperTag, examName, year, tier, subject,
+      topic, subTopic, difficulty, shift, paperDate, uploadKey
+    ].forEach((el) => {
+      el.addEventListener("change", savePaperSettings);
+      el.addEventListener("input", savePaperSettings);
+    });
+
+    downloadJsonBtn.addEventListener("click", () => {
+      if (!entries.length) return;
+      const questions = entries.map((e) => e.question);
+      const json = JSON.stringify(questions, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const fileName = normalizeFileName(paperFileName.value);
+      downloadBlob(blob, fileName);
+      setStatus("Downloaded " + fileName + " with " + questions.length + " questions.", false);
+    });
+
+    uploadImagesBtn.addEventListener("click", async () => {
+      if (!entries.length) return;
+      const token = uploadKey.value.trim();
+      if (!token) {
+        setStatus("Upload key is required to upload images.", true);
+        return;
+      }
+
+      const allAssets = [];
+      entries.forEach((entry) => {
+        entry.assets.forEach((asset) => allAssets.push(asset));
+      });
+      if (!allAssets.length) {
+        if (currentFormHasAnyImage()) {
+          setStatus("Please click 'Add This Question' first, then upload images.", true);
+        } else {
+          setStatus("No images found in added questions.", true);
+        }
+        return;
+      }
+
+      const folder = `${STORAGE_CONFIG.rootFolder}/${getPaperFolder()}`;
+      uploadImagesBtn.disabled = true;
+      let successCount = 0;
+      try {
+        for (let i = 0; i < allAssets.length; i += 1) {
+          const asset = allAssets[i];
+          const remotePath = `${folder}/${asset.fileName}`;
+          setStatus(`Uploading ${i + 1}/${allAssets.length}: ${asset.fileName}`, false);
+          await uploadFileToStorage(
+            STORAGE_CONFIG.owner,
+            STORAGE_CONFIG.repo,
+            token,
+            remotePath,
+            asset.content,
+            `Upload ${asset.fileName}`
+          );
+          successCount += 1;
+        }
+        setStatus(`Uploaded ${successCount} image(s) successfully.`, false);
+      } catch (err) {
+        setStatus("Upload failed after " + successCount + " file(s). " + err.message, true);
+      } finally {
+        updatePanel();
+      }
+    });
+
+    loadPaperSettings();
+    loadQuestionsDraft();
+    updatePanel();
+  </script>
+</body>
+</html>
